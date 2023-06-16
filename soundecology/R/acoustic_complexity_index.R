@@ -154,15 +154,15 @@ acoustic_complexity <- function(soundfile, min_freq = NA, max_freq = NA, j = 5, 
 				max_col <- j_index * I_per_j
 								
 				D <- get_d(specA_left, q_index, min_col, max_col)
-				sum_I <- sum(specA_left[q_index,min_col:max_col])
+				sum_I <- sum(specA_left[q_index,min_col:max_col], na.rm = TRUE)
 				ACI_left_vals[j_index] <- D / sum_I
 				ACI_left_matrix[q_index, j_index] <- D / sum_I
 			}
 			
-			ACI_fl_left_vector[q_index] <- sum(ACI_left_vals)
+			ACI_fl_left_vector[q_index] <- sum(ACI_left_vals, na.rm = TRUE)
 			} 
 		
-		ACI_tot_left <- sum(ACI_fl_left_vector)
+		ACI_tot_left <- sum(ACI_fl_left_vector, na.rm = TRUE)
 		
 		#Right channel
 		#For each frequency bin fl
@@ -174,15 +174,15 @@ acoustic_complexity <- function(soundfile, min_freq = NA, max_freq = NA, j = 5, 
 				max_col <- j_index * I_per_j				
 				
 				D <- get_d(specA_right, q_index, min_col, max_col)
-				sum_I <- sum(specA_right[q_index, min_col:max_col])
+				sum_I <- sum(specA_right[q_index, min_col:max_col], na.rm = TRUE)
 				ACI_right_vals[j_index] <- D / sum_I
 				ACI_right_matrix[q_index, j_index] <- D / sum_I
 			}
 			
-			ACI_fl_right_vector[q_index] <- sum(ACI_right_vals)
+			ACI_fl_right_vector[q_index] <- sum(ACI_right_vals, na.rm = TRUE)
 			} 
 		
-		ACI_tot_right <- sum(ACI_fl_right_vector)
+		ACI_tot_right <- sum(ACI_fl_right_vector, na.rm = TRUE)
 		
 		ACI_tot_left_by_min <- round((ACI_tot_left/duration) * 60, 2)
 		ACI_tot_right_by_min <- round((ACI_tot_right/duration) * 60, 2)
@@ -263,15 +263,15 @@ acoustic_complexity <- function(soundfile, min_freq = NA, max_freq = NA, j = 5, 
 				max_col <- j_index * I_per_j
 								
 				D <- get_d(specA_left, q_index, min_col, max_col)
-				sum_I <- sum(specA_left[q_index, min_col:max_col])
+				sum_I <- sum(specA_left[q_index, min_col:max_col], na.rm = TRUE)
 				ACI_left_vals[j_index] <- D / sum_I
 				ACI_left_matrix[q_index, j_index] <- D / sum_I
 			}
 			
-			ACI_fl_left_vector[q_index] <- sum(ACI_left_vals)
+			ACI_fl_left_vector[q_index] <- sum(ACI_left_vals, na.rm = TRUE)
 		} 
 		
-		ACI_tot_left <- sum(ACI_fl_left_vector)
+		ACI_tot_left <- sum(ACI_fl_left_vector, na.rm = TRUE)
 		ACI_tot_left_by_min <- round((ACI_tot_left/duration) * 60, 2)
 		
 		ACI_tot_right <- NA
