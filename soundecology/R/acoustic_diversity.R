@@ -49,7 +49,7 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_t
 	#window length for the spectro and spec functions
 	#to keep each row every 10Hz
 	#Frequencies and seconds covered by each
-	##freq_per_row = 10
+	freq_per_row = 10
 	##wlen = samplingrate/freq_per_row
 	
 	#window lengths altered to more fit marine logarithmic sound windows.Leo August 2023
