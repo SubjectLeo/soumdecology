@@ -51,18 +51,16 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_t
 	#Frequencies and seconds covered by each
 	freq_per_row = 10
 	##wlen = samplingrate/freq_per_row
+
+	wlen = c(100, 100, 200, 500, 1000, 1000, 2000, 5000, 10000, 4000) # altered the window lengths to just show the windows. 2 Leo August 2023.
 	
 	#window lengths altered to more fit marine logarithmic sound windows.Leo August 2023
-	
 	# Sequence of window lengths
-	wlen_sequence <- c(100, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 24000)
-	
+	##wlen_sequence <- c(100, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 24000)
 	# Find the closest window length in the sequence to the sampling rate
-	closest_wlen <- wlen_sequence[which.min(abs(wlen_sequence - samplingrate))]
-	
+	##closest_wlen <- wlen_sequence[which.min(abs(wlen_sequence - samplingrate))]
 	# Use the closest_wlen as the window length for spectrogram calculation
-	wlen <- closest_wlen
-	
+	##wlen <- closest_wlen
 	## end of code insertion
 	
 	#Stereo file
@@ -80,7 +78,11 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_t
 		rm(left, right)
 		
 		if (max_freq > nyquist_freq) {
-			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", nyquist_freq, "Hz. But the script was set to measure up to ", max_freq, "Hz. The value of max_freq was changed to ", nyquist_freq, ".\n\n", sep = ""))
+			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", nyquist_freq, 
+				  "Hz. But the script was set to measure up to ", max_freq, 
+				  "Hz. The value of max_freq was changed to ", nyquist_freq, ".\n\n", 
+				  sep = ""
+				 ))
 			max_freq <- nyquist_freq
 		}
 		
@@ -223,7 +225,12 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_t
 		rm(soundfile)
 		
 		if (max_freq > nyquist_freq) {
-			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", nyquist_freq, "Hz. But the script was set to measure up to ", max_freq, "Hz. The value of max_freq was changed to ", nyquist_freq, ".\n\n", sep=""))
+			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", 
+				  nyquist_freq, "Hz. But the script was set to measure up to ", 
+				  max_freq, "Hz. The value of max_freq was changed to ", 
+				  nyquist_freq, ".\n\n", 
+				  sep=""
+				 ))
 			max_freq <- nyquist_freq
 		}
 		
@@ -305,5 +312,12 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_t
 		}
 		
 	}
-	invisible(list(adi_left = left_adi_return, adi_right = right_adi_return, left_band_values = left_bandvals_return, right_band_values = right_bandvals_return, left_bandrange_values = left_bandrange_return, right_bandrange_values = right_bandrange_return))
+	invisible(list
+		  (adi_left = left_adi_return, 
+		       adi_right = right_adi_return, 
+		       left_band_values = left_bandvals_return, 
+		       right_band_values = right_bandvals_return, 
+		       left_bandrange_values = left_bandrange_return, 
+		       right_bandrange_values = right_bandrange_return
+		  ))
 }
