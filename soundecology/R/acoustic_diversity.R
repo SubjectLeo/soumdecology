@@ -2,7 +2,7 @@
 # The ADI is calculated by dividing the spectrogram into bins (default 10) and taking the proportion of the signals in each bin above a threshold (default -50 dBFS). The ADI is the result of the Shannon index applied to these bins.
 # Lines 74 and 217 are altered to eliminate frequencies under 100.Leo Aug 8 2023
 
-acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_threshold = -50, freq_step = 1000, shannon = TRUE) {
+acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_threshold = -50, freq_step = 1000, shannon = TRUE) {
   
 	db_threshold <- as.numeric(db_threshold)
 	
