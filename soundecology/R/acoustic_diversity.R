@@ -1,9 +1,8 @@
 #Acoustic Diversity Index from Villanueva-Rivera \emph{et al.} 2011. 
 # The ADI is calculated by dividing the spectrogram into bins (default 10) and taking the proportion of the signals in each bin above a threshold (default -50 dBFS). The ADI is the result of the Shannon index applied to these bins.
-# Lines 74 and 217 are altered to eliminate frequencies under 100.Leo Aug 8 2023
 
-acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_threshold = -50, freq_step = 1000, shannon = TRUE) {
-  
+acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_threshold = -50, freq_step = 1000, shannon = TRUE){
+
 	db_threshold <- as.numeric(db_threshold)
 	
 	#test arguments
@@ -30,7 +29,7 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 	getscore <- function(spectrum, minf, maxf, db, freq_row){
 		miny<-round((minf)/freq_row)
 		maxy<-round((maxf)/freq_row)
-    		
+		
 		subA = spectrum[miny:maxy,]
 		
 		index1 <- length(subA[subA>db]) / length(subA)
@@ -50,17 +49,10 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 	#to keep each row every 10Hz
 	#Frequencies and seconds covered by each
 	freq_per_row = 10
-	##wlen = samplingrate/freq_per_row
-
-	wlen_seq <- c(100, 100, 200, 500, 1000, 1000, 2000, 5000, 10000, 4000) # altered the window lengths to just show the windows. 2 Leo August 2023
+	wlen = samplingrate/freq_per_row
 	
 	#Stereo file
 	if (soundfile@stereo == TRUE) {
-
- for (wlen_index in seq_along(wlen_seq)) {
-    wlen <- wlen_seq[wlen_index]
-#addition of code for creating a loop for the different sequence data. Leo2 Augest 2022.
-	 
 		cat("\n This is a stereo file. Results will be given for each channel.\n")
 		left<-channel(soundfile, which = c("left"))
 		right<-channel(soundfile, which = c("right"))
@@ -68,22 +60,16 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 		
 		#matrix of values
 		cat("\n Calculating index. Please wait... \n\n")
-		specA_left <- spectro(left, f = samplingrate, wl = wlen[wlen_index], plot = FALSE)$amp
-		specA_right <- spectro(right, f = samplingrate, wl = wlen[wlen_index], plot = FALSE)$amp
+		specA_left <- spectro(left, f = samplingrate, wl = wlen, plot = FALSE)$amp
+		specA_right <- spectro(right, f = samplingrate, wl = wlen, plot = FALSE)$amp
 		
 		rm(left, right)
 		
 		if (max_freq > nyquist_freq) {
-			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", nyquist_freq, 
-				  "Hz. But the script was set to measure up to ", max_freq, 
-				  "Hz. The value of max_freq was changed to ", nyquist_freq, ".\n\n", 
-				  sep = ""
-				 ))
+			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", nyquist_freq, "Hz. But the script was set to measure up to ", max_freq, "Hz. The value of max_freq was changed to ", nyquist_freq, ".\n\n", sep = ""))
 			max_freq <- nyquist_freq
-			}
+		}
 		
-		## Freq is altered to eliminate the frequencies below min_freq.- Leo, Aug 2023.
-		#Freq <- seq(from = 0, to = max_freq - freq_step, by = freq_step)
 		Freq <- seq(from = min_freq, to = max_freq - freq_step, by = freq_step)
 		
 		#LEFT CHANNEL
@@ -92,15 +78,15 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 		Score <- rep(NA, length(Freq))
 		
 		for (j in 1:length(Freq)) {
-		  Score[j] = getscore(specA_left, Freq[j], (Freq[j] + freq_step), db_threshold, freq_per_row)
-		  }
+			Score[j] = getscore(specA_left, Freq[j], (Freq[j] + freq_step), db_threshold, freq_per_row)
+		}
 		
 		left_vals = Score
 		
 		Score1 = 0
 		for (i in 1:length(Freq)) {
 			Score1 = Score1 + (Score[i] * log(Score[i] + 0.0000001))
-			}
+		}
 		
 		#Average
 		Score_left = (-(Score1)) / length(Freq)
@@ -113,14 +99,14 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 		
 		for (j in 1:length(Freq)) {
 			Score[j] = getscore(specA_right, Freq[j], (Freq[j] + freq_step), db_threshold, freq_per_row)
-			}
+		}
 		
 		right_vals = Score
 		
 		Score1 = 0
 		for (i in 1:length(Freq)) {
 			Score1 = Score1 + (Score[i] * log(Score[i] + 0.0000001))
-			}
+		}
 		
 		#Average
 		Score_right = (-(Score1)) / length(Freq)
@@ -142,7 +128,7 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 			right_bandvals_return[j] = round(right_vals[j], 6)
 			left_bandrange_return[j] = paste(Freq[j], "-", (Freq[j] + freq_step), " Hz", sep = "")
 			right_bandrange_return[j] = paste(Freq[j], "-", (Freq[j] + freq_step), " Hz", sep = "")
-			}
+		}
 		
 # 		cat("\n Plot of proportions in each band: \n\n")
 # 		cat("  Left channel\n")
@@ -169,7 +155,7 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 # 			}
 # 			cat("\n")
 # 			rm(temp_val)
-			}
+		}
 		
 # 		cat("\n  Right channel\n")
 # 		cat("   Freq. range (Hz) |--------------------|\n")
@@ -184,7 +170,7 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 			
 			for (f in seq(1, this_row_space, by = 1)) {
 				this_row_spaces = paste(this_row_spaces, " ", sep = "")
-				}
+			}
 			
 # 			cat(paste("   ", this_row_name, this_row_spaces, "|", sep=""))
 # 			
@@ -196,44 +182,36 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 # 			}
 # 			cat("\n")
 # 			rm(temp_val)
-			}
+		}
 		
 		
 		if (shannon == TRUE){
 			left_adi_return = round(Shannon_left, 6)
 			right_adi_return = round(Shannon_right, 6)
-			}else{
+		}else{
 			left_adi_return = round(Score_left, 6)
 			right_adi_return = round(Score_right, 6)
-			}
+		}
 		cat("  Acoustic Diversity Index: \n")
 		cat(paste("   Left channel: ", left_adi_return, "\n", sep = ""))
 		cat(paste("   Right channel: ", right_adi_return, "\n", sep = ""))
-	}
-} else {
+		
+	} else 
+	{
 		cat("\n This is a mono file.\n")
-
- for (wlen_index in seq_along(wlen_seq)) {
-#addition of code for creating a loop for the different sequence data. Leo2 Augest 2022.		
+		
 		#matrix of values
 		cat("\n Calculating index. Please wait... \n\n")
-		specA_left <- spectro(soundfile, f = samplingrate, wl = wlen_seq[wlen_index], plot = FALSE)$amp
+		specA_left <- spectro(soundfile, f = samplingrate, wl = wlen, plot = FALSE)$amp
 		
 		rm(soundfile)
 		
 		if (max_freq > nyquist_freq) {
-			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", 
-				  nyquist_freq, "Hz. But the script was set to measure up to ", 
-				  max_freq, "Hz. The value of max_freq was changed to ", 
-				  nyquist_freq, ".\n\n", 
-				  sep=""
-				 ))
+			cat(paste("\n WARNING: The maximum acoustic frequency that this file can use is ", nyquist_freq, "Hz. But the script was set to measure up to ", max_freq, "Hz. The value of max_freq was changed to ", nyquist_freq, ".\n\n", sep=""))
 			max_freq <- nyquist_freq
 		}
 		
-		## Freq is altered to eliminate the frequencies below min_freq.- Leo, Aug 2023.
-		#Freq <- seq(from = 0, to = max_freq - freq_step, by = freq_step)
-		Freq <- seq(from = min_freq, to = max_freq - freq_step, by = freq_step)
+		Freq<-seq(from = min_freq, to = max_freq - freq_step, by = freq_step)
 		
 		#Score=seq(from=0, to=0, length=length(Freq))
 		Score <- rep(NA, length(Freq))
@@ -309,13 +287,5 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 		}
 		
 	}
-	invisible(list
-		  (adi_left = left_adi_return, 
-		       adi_right = right_adi_return, 
-		       left_band_values = left_bandvals_return, 
-		       right_band_values = right_bandvals_return, 
-		       left_bandrange_values = left_bandrange_return, 
-		       right_bandrange_values = right_bandrange_return
-		  ))
-	}
+	invisible(list(adi_left = left_adi_return, adi_right = right_adi_return, left_band_values = left_bandvals_return, right_band_values = right_bandvals_return, left_bandrange_values = left_bandrange_return, right_bandrange_values = right_bandrange_return))
 }
