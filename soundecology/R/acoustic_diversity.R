@@ -214,11 +214,10 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 		cat("\n This is a mono file.\n")
 
  for (wlen_index in seq_along(wlen_seq)) {
-    wlen <- wlen_seq[wlen_index]
 #addition of code for creating a loop for the different sequence data. Leo2 Augest 2022.		
 		#matrix of values
 		cat("\n Calculating index. Please wait... \n\n")
-		specA_left <- spectro(soundfile, f = samplingrate, wl = wlen[wlen_index], plot = FALSE)$amp
+		specA_left <- spectro(soundfile, f = samplingrate, wl = wlen_seq[wlen_index], plot = FALSE)$amp
 		
 		rm(soundfile)
 		
