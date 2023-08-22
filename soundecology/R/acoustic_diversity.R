@@ -1,8 +1,9 @@
 #Acoustic Diversity Index from Villanueva-Rivera \emph{et al.} 2011. 
 # The ADI is calculated by dividing the spectrogram into bins (default 10) and taking the proportion of the signals in each bin above a threshold (default -50 dBFS). The ADI is the result of the Shannon index applied to these bins.
+# Lines 74 and 217 are altered to eliminate frequencies under 100.Leo Aug 8 2023
 
-acoustic_diversity <- function(soundfile, max_freq = 10000, db_threshold = -50, freq_step = 1000, shannon = TRUE){
-
+acoustic_diversity <- function(soundfile, max_freq = 10000, min_freq = 100, db_threshold = -50, freq_step = 1000, shannon = TRUE) {
+  
 	db_threshold <- as.numeric(db_threshold)
 	
 	#test arguments
@@ -48,8 +49,21 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, db_threshold = -50, 
 	#window length for the spectro and spec functions
 	#to keep each row every 10Hz
 	#Frequencies and seconds covered by each
-	freq_per_row = 10
-	wlen = samplingrate/freq_per_row
+	##freq_per_row = 10
+	##wlen = samplingrate/freq_per_row
+	
+	#window lengths altered to more fit marine logarithmic sound windows.Leo August 2023
+	
+	# Sequence of window lengths
+	wlen_sequence <- c(100, 200, 300, 500, 1000, 2000, 3000, 5000, 10000, 20000, 24000)
+	
+	# Find the closest window length in the sequence to the sampling rate
+	closest_wlen <- wlen_sequence[which.min(abs(wlen_sequence - samplingrate))]
+	
+	# Use the closest_wlen as the window length for spectrogram calculation
+	wlen <- closest_wlen
+	
+	## end of code insertion
 	
 	#Stereo file
 	if (soundfile@stereo == TRUE) {
@@ -70,7 +84,9 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, db_threshold = -50, 
 			max_freq <- nyquist_freq
 		}
 		
-		Freq <- seq(from = 0, to = max_freq - freq_step, by = freq_step)
+		## Freq is altered to eliminate the frequencies below min_freq.- Leo, Aug 2023.
+		#Freq <- seq(from = 0, to = max_freq - freq_step, by = freq_step)
+		Freq <- seq(from = min_freq, to = max_freq - freq_step, by = freq_step)
 		
 		#LEFT CHANNEL
 		
@@ -78,7 +94,7 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, db_threshold = -50, 
 		Score <- rep(NA, length(Freq))
 		
 		for (j in 1:length(Freq)) {
-			Score[j] = getscore(specA_left, Freq[j], (Freq[j] + freq_step), db_threshold, freq_per_row)
+		  Score[j] = getscore(specA_left, Freq[j], (Freq[j] + freq_step), db_threshold, freq_per_row)
 		}
 		
 		left_vals = Score
@@ -211,7 +227,9 @@ acoustic_diversity <- function(soundfile, max_freq = 10000, db_threshold = -50, 
 			max_freq <- nyquist_freq
 		}
 		
-		Freq<-seq(from = 0, to = max_freq - freq_step, by = freq_step)
+		## Freq is altered to eliminate the frequencies below min_freq.- Leo, Aug 2023.
+		#Freq <- seq(from = 0, to = max_freq - freq_step, by = freq_step)
+		Freq <- seq(from = min_freq, to = max_freq - freq_step, by = freq_step)
 		
 		#Score=seq(from=0, to=0, length=length(Freq))
 		Score <- rep(NA, length(Freq))
