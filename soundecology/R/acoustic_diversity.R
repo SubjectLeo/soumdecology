@@ -30,7 +30,11 @@ acoustic_diversity <- function(soundfile, min_freq = 100, max_freq = 10000, db_t
 	getscore <- function(spectrum, minf, maxf, db, freq_row){
 		miny<-round((minf)/freq_row)
 		maxy<-round((maxf)/freq_row)
-		
+
+		#See if this code segment prevents Error in spectrum[miny:maxy, ] : subscript out of bounds. Leo2 Aug 2022
+    miny <- max(miny, 1)  # Ensure miny is within bounds
+    maxy <- min(maxy, nrow(spectrum))  # Ensure maxy is within bounds
+    		
 		subA = spectrum[miny:maxy,]
 		
 		index1 <- length(subA[subA>db]) / length(subA)
